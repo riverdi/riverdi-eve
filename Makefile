@@ -1,0 +1,137 @@
+#
+# Copyright (c) Riverdi Sp. z o.o. sp. k. <riverdi@riverdi.com>
+# Copyright (c) Skalski Embedded Technologies <contact@lukasz-skalski.com>
+#
+
+# Project name
+PROJECT = riverdi-demo
+
+# List all C defines here
+DEFS  = -DSTM32
+DEFS += -DSTM32F0
+DEFS += -DSTM32F031C6Tx
+DEFS += -DSTM32F031x6
+DEFS += -DUSE_HAL_DRIVER
+
+DEFS += -DSTM32_PLATFORM
+DEFS += -DSTM32_PLATFORM_COCMD_BURST
+
+DEFS += -DEVE_2
+DEFS += -DCTP_50
+
+# Define optimisation level here
+OPT = -Os
+
+# MCU type
+MCU  = cortex-m0
+
+# Tools
+PREFIX = arm-none-eabi-
+CC   = $(PREFIX)gcc
+CXX  = $(PREFIX)g++
+GDB  = $(PREFIX)gdb
+CP   = $(PREFIX)objcopy
+AS   = $(PREFIX)gcc -x assembler-with-cpp
+HEX  = $(CP) -O ihex
+BIN  = $(CP) -O binary -S
+
+#Path to Texane's stlink tools (hardcoded!)
+STLINK = /home/lskalski/Programs/stlink
+
+# List of source files
+SRC  = ./$(PROJECT).c
+
+SRC += ./host_layer/stm32/src/syscalls.c
+SRC += ./host_layer/stm32/src/stm32f0xx_it.c
+SRC += ./host_layer/stm32/src/system_stm32f0xx.c
+
+SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal.c
+SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal_cortex.c
+SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal_rcc.c
+SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal_gpio.c
+SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal_spi.c
+
+SRC += ./host_layer/stm32/platform.c
+
+SRC += ./eve_layer/Gpu_Hal.c
+SRC += ./eve_layer/CoPro_Cmds.c
+SRC += ./eve_layer/Hal_Utils.c
+SRC += ./app_layer/App_Common.c
+
+# List assembly startup source file here
+STARTUP = ./host_layer/stm32/startup/startup_stm32.s
+
+# List all include directories here
+INCDIRS  = ./
+INCDIRS += ./host_layer/stm32
+INCDIRS += ./host_layer/stm32/inc
+INCDIRS += ./host_layer/stm32/cmsis/core
+INCDIRS += ./host_layer/stm32/cmsis/device
+INCDIRS += ./host_layer/stm32/hal/inc
+INCDIRS += ./host_layer/stm32/hal/legacy
+
+INCDIRS += ./eve_layer
+INCDIRS += ./app_layer
+INCDIRS += ./riverdi_modules
+
+# List the user directory to look for the libraries here
+LIBDIRS +=
+
+# List all user libraries here
+LIBS =
+
+# Define linker script file here
+LINKER_SCRIPT = ./host_layer/stm32/linker/LinkerScript.ld
+
+# Dirs
+OBJS  = $(STARTUP:.s=.o) $(SRC:.c=.o)
+INCDIR  = $(patsubst %,-I%, $(INCDIRS))
+LIBDIR  = $(patsubst %,-L%, $(LIBDIRS))
+LIB     = $(patsubst %,-l%, $(LIBS))
+
+# Flags
+COMMONFLAGS = -mcpu=$(MCU) -mthumb -mfloat-abi=soft
+ASFLAGS = $(COMMONFLAGS)
+CPFLAGS = $(COMMONFLAGS) $(OPT) $(DEFS) -flto -g -Wall -ffunction-sections -fdata-sections
+LDFLAGS = $(COMMONFLAGS) -T$(LINKER_SCRIPT) -g -Wl,-Map=$(PROJECT).map -Wl,--gc-sections $(LIBDIR) $(LIB)
+
+#
+# Makefile Rules
+#
+
+all: $(OBJS) $(PROJECT).elf  $(PROJECT).hex $(PROJECT).bin
+	$(PREFIX)size $(PROJECT).elf
+
+%.o: %.c
+	$(CC) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
+
+%.o: %.s
+	$(AS) -c $(ASFLAGS) $< -o $@
+
+%.elf: $(OBJS)
+	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+%.hex: %.elf
+	$(HEX) $< $@
+
+%.bin: %.elf
+	$(BIN) $< $@
+
+flash: $(PROJECT).bin
+	$(STLINK)/st-flash write $(PROJECT).bin 0x8000000
+
+erase:
+	$(STLINK)/st-flash erase
+
+debug: $(PROJECT).elf
+	$(GDB) --eval-command="target remote localhost:4242" $(PROJECT).elf -ex 'load'
+
+clean:
+	-rm -rf $(OBJS)
+	-rm -rf $(PROJECT).elf
+	-rm -rf $(PROJECT).map
+	-rm -rf $(PROJECT).hex
+	-rm -rf $(PROJECT).bin
+	-rm -rf $(SRC:.c=.lst)
+	-rm -rf $(ASRC:.s=.lst)
+	-rm -rf $(STARTUP:.s=.lst)
