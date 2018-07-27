@@ -1,0 +1,82 @@
+#
+# Copyright (c) Riverdi Sp. z o.o. sp. k. <riverdi@riverdi.com>
+# Copyright (c) Skalski Embedded Technologies <contact@lukasz-skalski.com>
+#
+
+# Project name
+PROJECT = riverdi-demo
+
+# List all C defines here
+
+DEFS = -DLINUX_PLATFORM
+DEFS += -DBUFFER_OPTIMIZATION
+
+DEFS += -DEVE_2
+DEFS += -DCTP_50
+
+# Define optimisation level here
+OPT =
+
+# Tools
+PREFIX =
+CC   = $(PREFIX)gcc
+CXX  = $(PREFIX)g++
+GDB  = $(PREFIX)gdb
+CP   = $(PREFIX)objcopy
+AS   = $(PREFIX)gcc -x assembler-with-cpp
+
+# List of source files
+SRC  = ./$(PROJECT).c
+
+SRC += ./host_layer/linux/platform.c
+
+SRC += ./eve_layer/Gpu_Hal.c
+SRC += ./eve_layer/CoPro_Cmds.c
+SRC += ./eve_layer/Hal_Utils.c
+SRC += ./app_layer/App_Common.c
+
+# List all include directories here
+INCDIRS  = ./
+INCDIRS += ./host_layer/linux
+INCDIRS += ./eve_layer
+INCDIRS += ./app_layer
+INCDIRS += ./riverdi_modules
+
+# List the user directory to look for the libraries here
+LIBDIRS +=
+
+# List all user libraries here
+LIBS =
+
+# Dirs
+OBJS    = $(SRC:.c=.o)
+INCDIR  = $(patsubst %,-I%, $(INCDIRS))
+LIBDIR  = $(patsubst %,-L%, $(LIBDIRS))
+LIB     = $(patsubst %,-l%, $(LIBS))
+
+# Flags
+COMMONFLAGS =
+ASFLAGS = $(COMMONFLAGS)
+CPFLAGS = $(COMMONFLAGS) $(DEFS)
+LDFLAGS = $(COMMONFLAGS) $(LIBDIR) $(LIB)
+
+#
+# Makefile Rules
+#
+
+all: $(PROJECT)
+
+$(PROJECT): $(OBJS)
+	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+%.o: %.c
+	$(CC) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
+
+%.o: %.s
+	$(AS) -c $(ASFLAGS) $< -o $@
+
+clean:
+	-rm -rf $(PROJECT)
+	-rm -rf $(OBJS)
+	-rm -rf $(SRC:.c=.lst)
+	-rm -rf $(ASRC:.s=.lst)

@@ -69,7 +69,7 @@ void App_WrCoCmd_Buffer(Gpu_Hal_Context_t *phost,uint32_t cmd)
 
 #endif
 
-#if ( defined(STM32_PLATFORM) || defined(LINUX_PLATFORM) )
+#if (defined(STM32_PLATFORM))
     Gpu_Hal_WrCmd32(phost,cmd);
 #endif
     /* Increment the command index */
@@ -94,7 +94,7 @@ void App_WrDl_Buffer(Gpu_Hal_Context_t *phost,uint32_t cmd)
 
 #endif
 
-#if ( defined(STM32_PLATFORM) || defined(LINUX_PLATFORM) )
+#if (defined(STM32_PLATFORM))
     Gpu_Hal_Wr32(phost,(RAM_DL+DlBuffer_Index),cmd);
 #endif
     /* Increment the command index */

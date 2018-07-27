@@ -620,6 +620,14 @@ void Gpu_CoCmd_SetRotate(Gpu_Hal_Context_t *phost,uint32_t r)
 
 void Gpu_Copro_SendCmd(Gpu_Hal_Context_t *phost,uint32_t cmd)
 {
+#ifdef LINUX_PLATFORM
+#ifdef BUFFER_OPTIMIZATION
+  App_WrCoCmd_Buffer(phost,cmd);
+#else
+  Gpu_Hal_Transfer32(phost,cmd);
+#endif
+#endif
+
 #ifdef STM32_PLATFORM
 #ifdef STM32_PLATFORM_COCMD_BURST
    Gpu_Hal_Transfer32(phost,cmd);
@@ -631,6 +639,14 @@ void Gpu_Copro_SendCmd(Gpu_Hal_Context_t *phost,uint32_t cmd)
 
 void Gpu_CoCmd_SendStr(Gpu_Hal_Context_t *phost,const char8_t *s)
 {
+#if defined LINUX_PLATFORM
+#ifdef BUFFER_OPTIMIZATION
+  App_WrCoStr_Buffer(phost,s);
+#else
+  Gpu_Hal_TransferString(phost,s);
+#endif
+#endif
+
 #ifdef STM32_PLATFORM
 #ifdef STM32_PLATFORM_COCMD_BURST
   Gpu_Hal_TransferString(phost,s);
@@ -649,6 +665,13 @@ void Gpu_CoCmd_SendStr(Gpu_Hal_Context_t *phost,const char8_t *s)
 
 void Gpu_CoCmd_StartFunc(Gpu_Hal_Context_t *phost,uint16_t count)
 {
+#if defined LINUX_PLATFORM
+#ifndef BUFFER_OPTIMIZATION
+  Gpu_Hal_CheckCmdBuffer(phost,count);
+  Gpu_Hal_StartCmdTransfer(phost,GPU_WRITE,count);
+#endif
+#endif
+
 #ifdef STM32_PLATFORM
 #ifdef STM32_PLATFORM_COCMD_BURST
   Gpu_Hal_CheckCmdBuffer(phost,count);
@@ -659,6 +682,13 @@ void Gpu_CoCmd_StartFunc(Gpu_Hal_Context_t *phost,uint16_t count)
 
 void Gpu_CoCmd_EndFunc(Gpu_Hal_Context_t *phost,uint16_t count)
 {
+#if defined LINUX_PLATFORM
+#ifndef BUFFER_OPTIMIZATION
+  Gpu_Hal_EndTransfer(phost);
+  Gpu_Hal_Updatecmdfifo(phost,count);
+#endif
+#endif
+
 #ifdef STM32_PLATFORM
 #ifdef STM32_PLATFORM_COCMD_BURST
   Gpu_Hal_EndTransfer(phost);
