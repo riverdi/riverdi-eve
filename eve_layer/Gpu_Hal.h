@@ -32,6 +32,10 @@
 #define FIFO_SIZE_MASK			(4095)
 #define FIFO_BYTE_ALIGNMENT_MASK	(0xFFC)
 
+/* only for FT232H_MINGW_PLATFORM */
+#define SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE          0x00000002
+#define SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE         0x00000004
+
 /******************************************************************************/
 
 typedef enum {

@@ -35,14 +35,7 @@
 bool_t
 Gpu_Hal_Init (Gpu_HalInit_t *halinit)
 {
-  platform_init();
-
-  platform_gpio_init (GPIO_CS);  /*  chip select */
-  platform_gpio_init (GPIO_PD);  /*  powerdown   */
-  platform_gpio_init (GPIO_INT); /*  interrupt   */
-
-  platform_gpio_value (GPIO_PD, GPIO_HIGH);
-  platform_gpio_value (GPIO_CS, GPIO_HIGH);
+  platform_init (halinit);
 
   return TRUE;
 }
@@ -56,8 +49,15 @@ Gpu_Hal_Open (Gpu_Hal_Context_t *host)
 {
   bool_t ret;
 
+  platform_gpio_init (host, GPIO_CS);  /*  chip select */
+  platform_gpio_init (host, GPIO_PD);  /*  powerdown   */
+  platform_gpio_init (host, GPIO_INT); /*  interrupt   */
+
+  platform_gpio_value (host, GPIO_PD, GPIO_HIGH);
+  platform_gpio_value (host, GPIO_CS, GPIO_HIGH);
+
   /* init SPI */
-  ret = platform_spi_init();
+  ret = platform_spi_init (host);
 
   /* initialize the context valriables */
   host->cmd_fifo_wp = host->dl_buff_wp = 0;
@@ -75,7 +75,7 @@ void
 Gpu_Hal_Close (Gpu_Hal_Context_t *host)
 {
   /* deinit SPI */
-  platform_spi_deinit();
+  platform_spi_deinit (host);
 
   host->status = GPU_HAL_CLOSED;
 }
@@ -102,22 +102,32 @@ Gpu_Hal_StartTransfer (Gpu_Hal_Context_t  *host,
 {
   if (GPU_READ == rw)
     {
-      platform_gpio_value (GPIO_CS, GPIO_LOW);
+      uchar8_t transfer[4];
 
-      platform_spi_send_recv_byte((addr >> 16));
-      platform_spi_send_recv_byte((addr & 0xFF00) >> 8);
-      platform_spi_send_recv_byte((addr & 0xFF));
-      platform_spi_send_recv_byte(DUMMY_BYTE);
+      transfer[0] = addr >> 16;
+      transfer[1] = (addr & 0xFF00) >> 8;
+      transfer[2] = addr & 0xFF;
+      transfer[3] = DUMMY_BYTE;
+
+      platform_gpio_value (host, GPIO_CS, GPIO_LOW);
+
+      platform_spi_send_data (host, transfer, sizeof(transfer),
+                              SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
 
       host->status = GPU_HAL_READING;
     }
   else
     {
-      platform_gpio_value (GPIO_CS, GPIO_LOW);
+      uchar8_t transfer[3];
 
-      platform_spi_send_recv_byte(((addr >> 16) & 0xBF) | 0x80);
-      platform_spi_send_recv_byte((addr & 0xFF00) >> 8);
-      platform_spi_send_recv_byte((addr & 0xFF));
+      transfer[0] = ((addr >> 16) & 0xBF) | 0x80;
+      transfer[1] = (addr & 0xFF00) >> 8;
+      transfer[2] = addr & 0xFF;
+
+      platform_gpio_value (host, GPIO_CS, GPIO_LOW);
+
+      platform_spi_send_data (host, transfer, sizeof(transfer),
+                              SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
 
       host->status = GPU_HAL_WRITING;
     }
@@ -145,7 +155,7 @@ Gpu_Hal_TransferString (Gpu_Hal_Context_t  *host,
 {
   uint16_t length = strlen(string);
 
-  string += platform_spi_send_data ((uchar8_t*)string, length);
+  string += platform_spi_send_data (host, (uchar8_t*)string, length, 0);
   /*
   while(length --)
     {
@@ -166,7 +176,7 @@ uint8_t
 Gpu_Hal_Transfer8 (Gpu_Hal_Context_t  *host,
                    uint8_t             value)
 {
-  return platform_spi_send_recv_byte(value);
+  return platform_spi_send_recv_byte (host, value, host->status);
 }
 
 
@@ -224,7 +234,12 @@ Gpu_Hal_Transfer32 (Gpu_Hal_Context_t  *host,
 void
 Gpu_Hal_EndTransfer (Gpu_Hal_Context_t *host)
 {
-  platform_gpio_value (GPIO_CS, GPIO_HIGH);
+/* TODO: this part should be platform independent */
+#ifdef FT232H_MINGW_PLATFORM
+  SPI_ToggleCS ((FT_HANDLE)host->hal_handle,FALSE);
+#else
+  platform_gpio_value (host, GPIO_CS, GPIO_HIGH);
+#endif
 
   host->status = GPU_HAL_OPENED;
 }
@@ -333,13 +348,19 @@ void
 Gpu_HostCommand (Gpu_Hal_Context_t  *host,
                  uint8_t             cmd)
 {
-  platform_gpio_value (GPIO_CS, GPIO_LOW);
+  uchar8_t transfer[3];
 
-  platform_spi_send_recv_byte(cmd);
-  platform_spi_send_recv_byte(0x00);
-  platform_spi_send_recv_byte(0x00);
+  transfer[0] = cmd;
+  transfer[1] = 0x00;
+  transfer[2] = 0x00;
 
-  platform_gpio_value (GPIO_CS, GPIO_HIGH);
+  platform_gpio_value (host, GPIO_CS, GPIO_LOW);
+
+  platform_spi_send_data (host, transfer, sizeof(transfer),
+                          SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE |
+                          SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+
+  platform_gpio_value (host, GPIO_CS, GPIO_HIGH);
 }
 
 
@@ -350,13 +371,19 @@ void
 Gpu_HostCommand_Ext3 (Gpu_Hal_Context_t  *host,
                       uint32_t            cmd)
 {
-  platform_gpio_value (GPIO_CS, GPIO_LOW);
+  uchar8_t transfer[3];
 
-  platform_spi_send_recv_byte(cmd);
-  platform_spi_send_recv_byte((cmd>>8) & 0xff);
-  platform_spi_send_recv_byte((cmd>>16) & 0xff);
+  transfer[0] = cmd;
+  transfer[1] = (cmd>>8) & 0xff;
+  transfer[2] = (cmd>>16) & 0xff;
 
-  platform_gpio_value (GPIO_CS, GPIO_HIGH);
+  platform_gpio_value (host, GPIO_CS, GPIO_LOW);
+
+  platform_spi_send_data (host, transfer, sizeof(transfer),
+                          SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE |
+                          SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+
+  platform_gpio_value (host, GPIO_CS, GPIO_HIGH);
 }
 
 /*****************************************************************************/
@@ -370,16 +397,16 @@ Gpu_Hal_Powercycle (Gpu_Hal_Context_t  *host,
 {
   if (up)
     {
-      platform_gpio_value (GPIO_PD, GPIO_LOW);
+      platform_gpio_value (host, GPIO_PD, GPIO_LOW);
       Gpu_Hal_Sleep(20);
-      platform_gpio_value (GPIO_PD, GPIO_HIGH);
+      platform_gpio_value (host, GPIO_PD, GPIO_HIGH);
       Gpu_Hal_Sleep(20);
     }
   else
     {
-      platform_gpio_value (GPIO_PD, GPIO_HIGH);
+      platform_gpio_value (host, GPIO_PD, GPIO_HIGH);
       Gpu_Hal_Sleep(20);
-      platform_gpio_value (GPIO_PD, GPIO_LOW);
+      platform_gpio_value (host, GPIO_PD, GPIO_LOW);
       Gpu_Hal_Sleep(20);
     }
 }
@@ -407,7 +434,7 @@ Gpu_Hal_WrMem (Gpu_Hal_Context_t  *host,
 {
   Gpu_Hal_StartTransfer(host,GPU_WRITE,addr);
 
-  buffer += platform_spi_send_data ((uchar8_t*)buffer, length);
+  buffer += platform_spi_send_data (host, (uchar8_t*)buffer, length, 0);
   /*
   while (length--)
     {
@@ -430,7 +457,7 @@ Gpu_Hal_RdMem (Gpu_Hal_Context_t  *host,
 {
   Gpu_Hal_StartTransfer(host,GPU_READ,addr);
 
-  platform_spi_recv_data ((uchar8_t*) buffer, length);
+  platform_spi_recv_data (host, (uchar8_t*) buffer, length, 0);
   /*
   while (length--)
     {
@@ -690,7 +717,7 @@ Gpu_Hal_WrCmdBuf (Gpu_Hal_Context_t  *host,
       Gpu_Hal_CheckCmdBuffer(host,length);
       Gpu_Hal_StartCmdTransfer(host,GPU_WRITE,length);
 
-      SizeTransfered = platform_spi_send_data ((uchar8_t*)buffer, length);
+      SizeTransfered = platform_spi_send_data (host, (uchar8_t*)buffer, length, 0);
 
       /*
       SizeTransfered = 0;
@@ -771,7 +798,7 @@ Gpu_Hal_WrCmdBuf_nowait (Gpu_Hal_Context_t  *host,
       Gpu_Hal_CheckCmdBuffer(host,length);
       Gpu_Hal_StartCmdTransfer(host,GPU_WRITE,length);
 
-      SizeTransfered = platform_spi_send_data ((uchar8_t*)buffer, length);
+      SizeTransfered = platform_spi_send_data (host, (uchar8_t*)buffer, length, 0);
 
       /*
       SizeTransfered = 0;

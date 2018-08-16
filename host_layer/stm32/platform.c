@@ -11,7 +11,7 @@ SPI_HandleTypeDef spi;
  * platform_init()
  */
 bool_t
-platform_init (void)
+platform_init (Gpu_HalInit_t *halinit)
 {
   HAL_Init();
 
@@ -67,7 +67,8 @@ platform_sleep_ms (uint32_t ms)
 /*
  * platform_spi_init()
  */
-bool_t platform_spi_init (void)
+bool_t
+platform_spi_init (Gpu_Hal_Context_t *host)
 {
 
   /*
@@ -103,7 +104,8 @@ bool_t platform_spi_init (void)
 /*
  * platform_spi_deinit()
  */
-void platform_spi_deinit (void)
+void
+platform_spi_deinit (Gpu_Hal_Context_t *host)
 {
   HAL_SPI_DeInit(&spi);
 }
@@ -112,7 +114,10 @@ void platform_spi_deinit (void)
 /*
  * platform_spi_send_recv_byte();
  */
-uchar8_t platform_spi_send_recv_byte (uchar8_t data)
+uchar8_t
+platform_spi_send_recv_byte (Gpu_Hal_Context_t  *host,
+                             uchar8_t            data,
+                             uint32_t            opt)
 {
   uint8_t answer;
 
@@ -125,7 +130,11 @@ uchar8_t platform_spi_send_recv_byte (uchar8_t data)
 /*
  * platform_spi_send_data()
  */
-uint16_t platform_spi_send_data (uchar8_t *data, uint16_t size)
+uint16_t
+platform_spi_send_data (Gpu_Hal_Context_t  *host,
+                        uchar8_t           *data,
+                        uint16_t            size,
+                        uint32_t            opt)
 {
   HAL_SPI_Transmit (&spi, data, size, HAL_MAX_DELAY);
 
@@ -136,7 +145,11 @@ uint16_t platform_spi_send_data (uchar8_t *data, uint16_t size)
 /*
  * platform_spi_recv_data()
  */
-void platform_spi_recv_data (uchar8_t *data, uint16_t size)
+void
+platform_spi_recv_data (Gpu_Hal_Context_t  *host,
+                        uchar8_t           *data,
+                        uint16_t            size,
+                        uint32_t            opt)
 {
   HAL_SPI_Receive (&spi, data, size, HAL_MAX_DELAY);
 }
@@ -145,7 +158,9 @@ void platform_spi_recv_data (uchar8_t *data, uint16_t size)
 /*
  * platform_gpio_init()
  */
-bool_t platform_gpio_init (gpio_name ngpio)
+bool_t
+platform_gpio_init (Gpu_Hal_Context_t *host,
+                    gpio_name          ngpio)
 {
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -164,8 +179,10 @@ bool_t platform_gpio_init (gpio_name ngpio)
 /*
  * platform_gpio_value()
  */
-bool_t platform_gpio_value (gpio_name ngpio,
-                            gpio_val  vgpio)
+bool_t
+platform_gpio_value (Gpu_Hal_Context_t  *host,
+                     gpio_name           ngpio,
+                     gpio_val            vgpio)
 {
   HAL_GPIO_WritePin (GPIOA, ngpio, vgpio);
   return TRUE;

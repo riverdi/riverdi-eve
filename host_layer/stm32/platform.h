@@ -25,6 +25,17 @@ typedef unsigned char	uchar8_t;
 typedef signed char	schar8_t;
 typedef float		float_t;
 
+/* Predefined Riverdi modules */
+#include "modules.h"
+
+/* EVE inclusions */
+#include "Gpu_Hal.h"
+#include "Gpu.h"
+#include "CoPro_Cmds.h"
+#include "Hal_Utils.h"
+
+/*****************************************************************************/
+
 typedef enum {
   GPIO_CS   = GPIO_PIN_4,
   GPIO_PD   = GPIO_PIN_2,
@@ -38,28 +49,19 @@ typedef enum {
 
 /*****************************************************************************/
 
-bool_t platform_init (void);
+bool_t platform_init (Gpu_HalInit_t*);
 void platform_sleep_ms (uint32_t);
 
-bool_t platform_spi_init (void);
-void platform_spi_deinit (void);
+bool_t platform_spi_init (Gpu_Hal_Context_t*);
+void platform_spi_deinit (Gpu_Hal_Context_t*);
 
-uchar8_t platform_spi_send_recv_byte (uchar8_t);
-uint16_t platform_spi_send_data (uchar8_t *data, uint16_t size);
-void platform_spi_recv_data (uchar8_t *data, uint16_t size);
+uchar8_t platform_spi_send_recv_byte (Gpu_Hal_Context_t*, uchar8_t, uint32_t);
+uint16_t platform_spi_send_data (Gpu_Hal_Context_t*, uchar8_t*, uint16_t, uint32_t);
+void platform_spi_recv_data (Gpu_Hal_Context_t*, uchar8_t*, uint16_t, uint32_t);
 
-bool_t platform_gpio_init (gpio_name);
-bool_t platform_gpio_value (gpio_name, gpio_val );
+bool_t platform_gpio_init (Gpu_Hal_Context_t*, gpio_name);
+bool_t platform_gpio_value (Gpu_Hal_Context_t*, gpio_name, gpio_val);
 
 /*****************************************************************************/
-
-/* Predefined Riverdi modules */
-#include "modules.h"
-
-/* EVE inclusions */
-#include "Gpu_Hal.h"
-#include "Gpu.h"
-#include "CoPro_Cmds.h"
-#include "Hal_Utils.h"
 
 #endif /*_PLATFORM_H_*/
