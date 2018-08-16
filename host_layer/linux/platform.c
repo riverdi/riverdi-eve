@@ -19,7 +19,7 @@ pabort (const char *msg)
  * platform_init()
  */
 bool_t
-platform_init (void)
+platform_init (Gpu_HalInit_t *halinit)
 {
   /* intentionally empty */
   return TRUE;
@@ -39,7 +39,8 @@ platform_sleep_ms (uint32_t ms)
 /*
  * platform_spi_init()
  */
-bool_t platform_spi_init (void)
+bool_t
+platform_spi_init (Gpu_Hal_Context_t *host)
 {
   int ret;
   uint8_t mode;
@@ -94,7 +95,8 @@ bool_t platform_spi_init (void)
 /*
  * platform_spi_deinit()
  */
-void platform_spi_deinit (void)
+void
+platform_spi_deinit (Gpu_Hal_Context_t *host)
 {
   close (fd);
   fd = -1;
@@ -104,7 +106,10 @@ void platform_spi_deinit (void)
 /*
  * platform_spi_send_recv_byte();
  */
-uchar8_t platform_spi_send_recv_byte (uchar8_t data)
+uchar8_t
+platform_spi_send_recv_byte (Gpu_Hal_Context_t  *host,
+                             uchar8_t            data,
+                             uint32_t            opt)
 {
   int ret;
   uint8_t recv;
@@ -126,7 +131,11 @@ uchar8_t platform_spi_send_recv_byte (uchar8_t data)
 /*
  * platform_spi_send_data()
  */
-uint16_t platform_spi_send_data (uchar8_t *data, uint16_t size)
+uint16_t
+platform_spi_send_data (Gpu_Hal_Context_t  *host,
+                        uchar8_t           *data,
+                        uint16_t            size,
+                        uint32_t            opt)
 {
   size = write (fd, data, size);
 }
@@ -135,7 +144,11 @@ uint16_t platform_spi_send_data (uchar8_t *data, uint16_t size)
 /*
  * platform_spi_recv_data()
  */
-void platform_spi_recv_data (uchar8_t *data, uint16_t size)
+void
+platform_spi_recv_data (Gpu_Hal_Context_t  *host,
+                        uchar8_t           *data,
+                        uint16_t            size,
+                        uint32_t            opt)
 {
   read (fd, data, size);
 }
@@ -211,7 +224,9 @@ gpio_set_value (unsigned int gpio,
 /*
  * platform_gpio_init()
  */
-bool_t platform_gpio_init (gpio_name ngpio)
+bool_t
+platform_gpio_init (Gpu_Hal_Context_t *host,
+                    gpio_name          ngpio)
 {
  if (gpio_export (ngpio) < 0)
    return FALSE;
@@ -226,8 +241,10 @@ bool_t platform_gpio_init (gpio_name ngpio)
 /*
  * platform_gpio_value()
  */
-bool_t platform_gpio_value (gpio_name ngpio,
-                            gpio_val  vgpio)
+bool_t
+platform_gpio_value (Gpu_Hal_Context_t  *host,
+                     gpio_name           ngpio,
+                     gpio_val            vgpio)
 {
   return gpio_set_value (ngpio, vgpio);
 }
