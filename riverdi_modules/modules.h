@@ -31,7 +31,7 @@
 #endif
 #if defined (EVE_2)
 #if defined (NTP_35) || defined (RTP_35) || defined (CTP_35) || \
-    defined (NTP_45) || defined (RTP_45) || defined (CTP_45)
+    defined (NTP_43) || defined (RTP_43) || defined (CTP_43)
   #error "Not supported configuration - please contact Riverdi support <support@riverdi.com"
 #endif
 #endif
