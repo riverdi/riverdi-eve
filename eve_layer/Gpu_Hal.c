@@ -155,14 +155,11 @@ Gpu_Hal_TransferString (Gpu_Hal_Context_t  *host,
 {
   uint16_t length = strlen(string);
 
-  string += platform_spi_send_data (host, (uchar8_t*)string, length, 0);
-  /*
   while(length --)
     {
       Gpu_Hal_Transfer8(host,*string);
       string ++;
     }
-  */
 
   /* append one null as ending flag */
   Gpu_Hal_Transfer8(host,0);
