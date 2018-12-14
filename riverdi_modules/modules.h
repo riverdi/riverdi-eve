@@ -14,8 +14,11 @@
   #define FT80X_ENABLE
 #elif defined (EVE_2)
   #define FT81X_ENABLE
+#elif defined (EVE_3)
+  #define BT81X_ENABLE
+  #define FT81X_ENABLE
 #else
-  #error "Please choose generation of Embedded Video Engine (EVE_1, EVE_2)"
+  #error "Please choose generation of Embedded Video Engine (EVE_1, EVE_2, EVE_3)"
 #endif
 
 /*

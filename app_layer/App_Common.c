@@ -58,7 +58,7 @@ void App_WrCoCmd_Buffer(Gpu_Hal_Context_t *phost,uint32_t cmd)
 		//printf("CmdBuffer overflow\n");
 
 		if (CmdBuffer_Index > 0) {
-			Gpu_Hal_WrCmdBuf(phost, CmdBuffer, CmdBuffer_Index);//This blocking state may be infinite due to Display list overflow
+			Gpu_Hal_WrCmdBuf_nowait(phost, CmdBuffer, CmdBuffer_Index);
 		}
 		CmdBuffer_Index = 0;
 	}
@@ -798,17 +798,34 @@ void App_Common_Init(Gpu_Hal_Context_t *phost)
     Gpu_Hal_SetSPI(phost, GPU_SPI_SINGLE_CHANNEL, GPU_SPI_ONEDUMMY);
 #endif
 
-    /* access address 0 to wake up the FT800 */
+    /* access address 0 to wake up the chip */
     Gpu_HostCommand(phost,GPU_ACTIVE_M);
     Gpu_Hal_Sleep(300);
 
-    /* read Register ID to check if FT800 is ready */
+    /* read Register ID to check if chip ID series is correct */
     chipid = Gpu_Hal_Rd8(phost, REG_ID);
     while(chipid != 0x7C)
       {
         chipid = Gpu_Hal_Rd8(phost, REG_ID);
         Gpu_Hal_Sleep(100);
       }
+
+    /* read REG_CPURESET to confirm 0 is returned */
+    {
+      uint8_t engine_status;
+
+      /* Read REG_CPURESET to check if engines are ready.
+           Bit 0 for coprocessor engine,
+           Bit 1 for touch engine,
+           Bit 2 for audio engine.
+      */
+      engine_status = Gpu_Hal_Rd8(phost, REG_CPURESET);
+      while(engine_status != 0x00)
+        {
+          engine_status = Gpu_Hal_Rd8(phost, REG_CPURESET);
+          Gpu_Hal_Sleep(100);
+        }
+    }
 
     /* configuration of LCD display */
     Gpu_Hal_Wr16(phost, REG_HCYCLE, DispHCycle);

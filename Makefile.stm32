@@ -16,8 +16,22 @@ DEFS += -DUSE_HAL_DRIVER
 DEFS += -DSTM32_PLATFORM
 DEFS += -DSTM32_PLATFORM_COCMD_BURST
 
-DEFS += -DEVE_2
-DEFS += -DCTP_50
+#DEFS += -DEVE_1
+#DEFS += -DEVE_2
+DEFS += -DEVE_3
+
+DEFS += -DNTP_35
+#DEFS += -DRTP_35
+#DEFS += -DCTP_35
+#DEFS += -DNTP_43
+#DEFS += -DRTP_43
+#DEFS += -DCTP_43
+#DEFS += -DNTP_50
+#DEFS += -DRTP_50
+#DEFS += -DCTP_50
+#DEFS += -DNTP_70
+#DEFS += -DRTP_70
+#DEFS += -DCTP_70
 
 # Define optimisation level here
 OPT = -Os
@@ -36,7 +50,7 @@ HEX  = $(CP) -O ihex
 BIN  = $(CP) -O binary -S
 
 #Path to Texane's stlink tools (hardcoded!)
-STLINK = /home/lskalski/Programs/stlink
+STLINK = /home/lskalski/Programs/stlink/build/Release
 
 # List of source files
 SRC  = ./$(PROJECT).c

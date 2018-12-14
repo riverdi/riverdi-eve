@@ -7,6 +7,7 @@
 #define _PLATFORM_H_
 
 /* C library inclusions */
+#include <stdarg.h>
 #include <string.h>
 
 /* STM32 library inclusions */
