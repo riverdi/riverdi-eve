@@ -431,14 +431,13 @@ Gpu_Hal_WrMem (Gpu_Hal_Context_t  *host,
 {
   Gpu_Hal_StartTransfer(host,GPU_WRITE,addr);
 
-  buffer += platform_spi_send_data (host, (uchar8_t*)buffer, length, 0);
-  /*
+  /* buffer += platform_spi_send_data (host, (uchar8_t*)buffer, length, 0); */
   while (length--)
     {
       Gpu_Hal_Transfer8(host,*buffer);
       buffer++;
     }
-  */
+
   Gpu_Hal_EndTransfer(host);
 }
 
@@ -454,14 +453,13 @@ Gpu_Hal_RdMem (Gpu_Hal_Context_t  *host,
 {
   Gpu_Hal_StartTransfer(host,GPU_READ,addr);
 
-  platform_spi_recv_data (host, (uchar8_t*) buffer, length, 0);
-  /*
+  /* platform_spi_recv_data (host, (uchar8_t*) buffer, length, 0); */
   while (length--)
     {
       *buffer = Gpu_Hal_Transfer8(host,0);
       buffer++;
     }
-  */
+
   Gpu_Hal_EndTransfer(host);
 }
 
