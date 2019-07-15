@@ -50,15 +50,9 @@
   #define DispVOffset    13L
   #define DispVSync0     0L
   #define DispVSync1     2L
-
-#if defined (EVE_1)
-	#define DispPCLK     6
-#else
-	#define DispPCLK     8
-#endif
-
+  #define DispPCLK       6
   #define DispSwizzle    2
-  #define DispPCLKPol    0
+  #define DispPCLKPol    1
   #define DispCSpread    0
   #define DispDither     1
 #elif defined (NTP_43) || defined (RTP_43) || defined (CTP_43)
@@ -74,7 +68,7 @@
   #define DispVSync1     10L
   #define DispPCLK       5
   #define DispSwizzle    0
-  #define DispPCLKPol    0
+  #define DispPCLKPol    1
   #define DispCSpread    0
   #define DispDither     1
 #elif defined (NTP_50) || defined (RTP_50) || defined (CTP_50)
@@ -90,7 +84,7 @@
   #define DispVSync1     10L
   #define DispPCLK       2
   #define DispSwizzle    0
-  #define DispPCLKPol    1
+  #define DispPCLKPol    0
   #define DispCSpread    0
   #define DispDither     1
 #elif defined (NTP_70) || defined (RTP_70) || defined (CTP_70)
@@ -106,7 +100,7 @@
   #define DispVSync1     10L
   #define DispPCLK       2
   #define DispSwizzle    0
-  #define DispPCLKPol    1
+  #define DispPCLKPol    0
   #define DispCSpread    0
   #define DispDither     1
 #else
