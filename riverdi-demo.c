@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
   App_Common_Init(&host);
 
   /* Screen Calibration*/
-  App_Calibrate_Screen(&host);
+  //App_Calibrate_Screen(&host);
 
   /* Show Bridgetek logo */
   App_Show_Logo(&host);

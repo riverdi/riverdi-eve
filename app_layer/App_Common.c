@@ -799,6 +799,16 @@ void App_Common_Init(Gpu_Hal_Context_t *phost)
 #endif
 
     /* access address 0 to wake up the chip */
+
+
+
+#if (defined(EVE_2) && (defined(NTP_50)||defined(RTP_50)||defined(CTP_50)||defined(NTP_70)||defined(RTP_70)||defined(CTP_70)))
+    Gpu_HostCommand(phost,GPU_INTERNAL_OSC);
+#else
+    Gpu_HostCommand(phost,GPU_EXTERNAL_OSC);
+#endif
+
+    Gpu_HostCommand(phost,GPU_PLL_48M);
     Gpu_HostCommand(phost,GPU_ACTIVE_M);
     Gpu_Hal_Sleep(300);
 
