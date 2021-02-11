@@ -33,6 +33,8 @@ Revision History:
     #define RAM_G_END_ADDR 0x40000 //General purpose graphics RAM 256 kB
 #elif defined(FT81X_ENABLE)
     #define RAM_G_END_ADDR (0x100000) //General purpose graphics RAM 1024 kB
+#elif defined(BT81X_ENABLE)
+    #define RAM_G_END_ADDR (0x100000) //General purpose graphics RAM 1024 kB
 #else
     #error "Should select a GPU chip in Platform.h"
 #endif

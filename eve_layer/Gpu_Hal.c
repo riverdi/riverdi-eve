@@ -649,6 +649,121 @@ Gpu_Hal_SetSPI (Gpu_Hal_Context_t      *host,
 
 #endif /* FT81X_ENABLE */
 
+#ifdef BT81X_ENABLE
+
+/*
+ * Gpu_81X_SelectSysCLK()
+ *
+ * This API can only be called when PLL is stopped (SLEEP mode).
+ * For compatibility, set frequency to the GPU_12MHZ option in the
+ * GPU_SETPLLSP1_T table.
+ */
+void
+Gpu_81X_SelectSysCLK (Gpu_Hal_Context_t  *host,
+                      GPU_81X_PLL_FREQ_T  freq)
+{
+  if(GPU_SYSCLK_72M == freq)
+    Gpu_HostCommand_Ext3(host, (uint32_t)0x61 | (0x40 << 8) | (0x06 << 8));
+  else if(GPU_SYSCLK_60M == freq)
+    Gpu_HostCommand_Ext3(host, (uint32_t)0x61 | (0x40 << 8) | (0x05 << 8));
+  else if(GPU_SYSCLK_48M == freq)
+    Gpu_HostCommand_Ext3(host, (uint32_t)0x61 | (0x40 << 8) | (0x04 << 8));
+  else if(GPU_SYSCLK_36M == freq)
+    Gpu_HostCommand_Ext3(host, (uint32_t)0x61 | (0x03 << 8));
+  else if(GPU_SYSCLK_24M == freq)
+    Gpu_HostCommand_Ext3(host, (uint32_t)0x61 | (0x02 << 8));
+  else if(GPU_SYSCLK_DEFAULT == freq)
+    Gpu_HostCommand_Ext3(host, 0x61);
+}
+
+
+/*
+ * Gpu_81X_PowerOffComponents()
+ *
+ * Power down or up ROMs and ADCs. Specified one or more elements in the
+ * GPU_81X_ROM_AND_ADC_T table to power down, unspecified elements will be
+ * powered up. The application must retain the state of the ROMs and ADCs
+ * as they're not readable from the device.
+ */
+void
+Gpu_81X_PowerOffComponents (Gpu_Hal_Context_t  *host,
+                            uint8_t             val)
+{
+  Gpu_HostCommand_Ext3(host, (uint32_t)0x49 | (val<<8));
+}
+
+
+/*
+ * Gpu_81X_PadDriveStrength()
+ *
+ * This API sets the current strength of supported GPIO/IO group(s).
+ */
+void
+Gpu_81X_PadDriveStrength (Gpu_Hal_Context_t              *host,
+                          GPU_81X_GPIO_DRIVE_STRENGTH_T   strength,
+                          GPU_81X_GPIO_GROUP_T            group)
+{
+  Gpu_HostCommand_Ext3(host, (uint32_t)0x70 | (group << 8) | (strength << 8));
+}
+
+
+/*
+ * Gpu_81X_ResetActive()
+ *
+ * This API will hold the system reset active, Gpu_81X_ResetRemoval() must be
+ * called to release the system reset.
+ */
+void
+Gpu_81X_ResetActive (Gpu_Hal_Context_t *host)
+{
+  Gpu_HostCommand_Ext3(host, GPU_81X_RESET_ACTIVE);
+}
+
+
+/*
+ * Gpu_81X_ResetRemoval()
+ *
+ * This API will release the system reset, and the system will exit reset and
+ * behave as after POR, settings done through SPI will not be affected.
+ */
+void
+Gpu_81X_ResetRemoval (Gpu_Hal_Context_t *host)
+{
+  Gpu_HostCommand_Ext3(host, GPU_81X_RESET_REMOVAL);
+}
+
+
+/*
+ * Gpu_Hal_SetSPI()
+ *
+ * Set EVE spi communication mode
+ */
+int16_t
+Gpu_Hal_SetSPI (Gpu_Hal_Context_t      *host,
+                GPU_SPI_NUMCHANNELS_T   numchnls,
+                GPU_SPI_NUMDUMMYBYTES   numdummy)
+{
+  uint8_t writebyte = 0;
+
+  if((numchnls > GPU_SPI_QUAD_CHANNEL) ||
+     (numdummy > GPU_SPI_TWODUMMY) ||
+     (numdummy < GPU_SPI_ONEDUMMY))
+    return -1;
+
+  /* swicth EVE to multi channel SPI mode */
+  writebyte = numchnls;
+  if(numdummy == GPU_SPI_TWODUMMY)
+    writebyte |= SPI_TWO_DUMMY_BYTE;
+  Gpu_Hal_Wr8(host, REG_SPI_WIDTH, writebyte);
+
+  /* FT81x swicthed to dual/quad mode, now update global HAL context */
+  host->spichannel = numchnls;
+  host->spinumdummy = numdummy;
+
+  return 0;
+}
+
+#endif /* BT81X_ENABLE */
 /*****************************************************************************/
 
 /*

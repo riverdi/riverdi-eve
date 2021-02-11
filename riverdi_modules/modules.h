@@ -10,7 +10,7 @@
  * Embedded Video Engine Series
  */
 
-#define EVE_3
+#define EVE_4
 
 //#define IPS_35
 //#define IPS_43
