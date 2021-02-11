@@ -223,6 +223,7 @@ void Gpu_CoreReset(Gpu_Hal_Context_t *host);
 
 typedef enum {
   GPU_SYSCLK_DEFAULT =	0x00, /* default 60MHz */
+  GPU_SYSCLK_84M =	0x07,
   GPU_SYSCLK_72M =	0x06,
   GPU_SYSCLK_60M =	0x05,
   GPU_SYSCLK_48M =	0x04,

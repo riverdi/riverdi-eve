@@ -1376,3 +1376,13 @@ void Gpu_CoCmd_EndFunc(Gpu_Hal_Context_t *phost,uint16_t count)
 #endif
 #endif
 }
+
+void Gpu_CoCmd_Hsf(Gpu_Hal_Context_t *phost,uint32_t w)
+  {
+#if defined (EVE_3)
+	Gpu_CoCmd_StartFunc(phost,CMD_SIZE*2);
+    Gpu_Copro_SendCmd(phost, CMD_HSF);
+    Gpu_Copro_SendCmd(phost, w);
+    Gpu_CoCmd_EndFunc(phost,(CMD_SIZE*2));
+#endif
+  }
