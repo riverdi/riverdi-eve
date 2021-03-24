@@ -776,14 +776,18 @@ void App_Common_Init(Gpu_Hal_Context_t *phost) {
 //    Gpu_Hal_Sleep(300);
 
 	/* access address 0 to wake up the chip */
-	Gpu_HostCommand(phost, GPU_SLEEP_M);
+	//Gpu_HostCommand(phost, GPU_SLEEP_M);
 
-	Gpu_Hal_Sleep(300);
+	//Gpu_Hal_Sleep(300);
 
 #if (defined(EVE_2) && (defined(NTP_50)||defined(RTP_50)||defined(CTP_50)||defined(NTP_70)||defined(RTP_70)||defined(CTP_70)))
     Gpu_HostCommand(phost,GPU_INTERNAL_OSC);
 #else
+#if (defined(EVE_4_INTERNAL_OSC))
+	Gpu_HostCommand(phost, GPU_INTERNAL_OSC);
+#else
 	Gpu_HostCommand(phost,GPU_EXTERNAL_OSC);
+#endif
 #endif
 
 	Gpu_Hal_Sleep(100);
@@ -792,7 +796,7 @@ void App_Common_Init(Gpu_Hal_Context_t *phost) {
 
 	//Gpu_HostCommand(phost,GPU_EXTERNAL_OSC);
 	//Gpu_HostCommand(phost,GPU_PLL_48M);
-	Gpu_81X_SelectSysCLK(phost, GPU_SYSCLK_72M);
+	//Gpu_81X_SelectSysCLK(phost, GPU_SYSCLK_72M);
 
 	Gpu_Hal_Wr32(phost, REG_FREQUENCY, 72000000);
 
@@ -858,8 +862,9 @@ void App_Common_Init(Gpu_Hal_Context_t *phost) {
 	//  Gpu_Hal_Wr8(phost, REG_GPIO_DIR,0xFFFF);
 	//Gpu_Hal_Wr16(phost, REG_GPIOX, 0xFFFF);
 #else
-    Gpu_Hal_Wr8(phost, REG_GPIO_DIR,0xff);
-    Gpu_Hal_Wr8(phost, REG_GPIO,0xff);
+	Gpu_Hal_Wr16(phost, REG_GPIOX_DIR, 0x8000);
+	Gpu_Hal_Wr16(phost, REG_GPIOX, 0x8000);
+
 #endif
 
 	Gpu_ClearScreen(phost);

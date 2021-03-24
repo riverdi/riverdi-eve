@@ -11,7 +11,8 @@
  */
 
 #define EVE_4
-
+#define EVE_4_INTERNAL_OSC
+//#define EVE_4_EXTERNAL_OSC
 //#define IPS_35
 //#define IPS_43
 //#define IPS_50
@@ -187,7 +188,7 @@
   #define DispPCLKPol    1
   #define DispCSpread    0
   #define DispDither     0
-  #define DispPLCLKFREQ  0xD12
+  #define DispPLCLKFREQ  0xE12
   #define DispPCLK2x	 0
 #elif defined (IPS_101)
   #define DispWidth      1280L
