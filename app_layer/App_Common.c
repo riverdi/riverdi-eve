@@ -832,7 +832,7 @@ void App_Common_Init(Gpu_Hal_Context_t *phost) {
 
 	uint16_t pwmHz = Gpu_Hal_Rd16(phost, REG_PWM_HZ);
 
-#if defined (EVE_3) || defined (EVE_4)
+#if defined (EVE_4)
 	Gpu_Hal_Wr16(phost, REG_PCLK_FREQ, DispPLCLKFREQ);
 	Gpu_Hal_Wr8(phost, REG_PCLK_2X, DispPCLK2x);
 #endif
