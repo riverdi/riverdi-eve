@@ -188,7 +188,7 @@
   #define DispPCLKPol    1
   #define DispCSpread    0
   #define DispDither     0
-  #define DispPLCLKFREQ  0xE12
+  #define DispPLCLKFREQ  0xD12
   #define DispPCLK2x	 0
 #elif defined (IPS_101)
   #define DispWidth      1280L
