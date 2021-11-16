@@ -6,7 +6,8 @@ OVERVIEW
 
 - __EVE 1__ series: FT800 and FT801,
 - __EVE 2__ series: FT810, FT811, FT812 and FT813,
-- __EVE 3__ series: BT815 and BT816 (available soon),
+- __EVE 3__ series: BT815 and BT816,
+- __EVE 4__ series: BT817 and BT818
 
 The library contains support for the most popular hardware/software platforms like:
 
