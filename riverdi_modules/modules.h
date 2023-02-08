@@ -85,7 +85,7 @@
   #define DispPCLKPol    1
   #define DispCSpread    0
   #define DispDither     0
-  #define DispPLCLKFREQ  0x122
+  #define DispPLCLKFREQ  0x22
   #define DispPCLK2x	 0
 #elif defined (NTP_43) || defined (RTP_43) || defined (CTP_43)
   #define DispWidth      480L
