@@ -74,8 +74,8 @@ void Gpu_CoCmd_LoadImage(Gpu_Hal_Context_t *phost,uint32_t ptr, uint32_t options
 void Gpu_CoCmd_Dlstart(Gpu_Hal_Context_t *phost);
 void Gpu_CoCmd_Snapshot(Gpu_Hal_Context_t *phost,uint32_t ptr);
 void Gpu_CoCmd_ScreenSaver(Gpu_Hal_Context_t *phost);
-void Gpu_CoCmd_MemCrc(Gpu_Hal_Context_t *phost,uint32_t ptr, uint32_t num, uint32_t result);
-void Gpu_CoCmd_Hsf(Gpu_Hal_Context_t *phost,uint32_t w);
+void Gpu_CoCmd_MemCrc(Gpu_Hal_Context_t *phost, uint32_t ptr, uint32_t num, uint32_t result);
+void Gpu_CoCmd_Hsf(Gpu_Hal_Context_t *phost, uint32_t w);
 
 uint32_t GET_ASTC_FORMAT(uint16_t w, uint16_t h);
 void astc_tile2(uint8_t *iData, uint16_t bw, uint16_t bh, uint32_t size, uint8_t *oData);

@@ -156,7 +156,7 @@
 #define CMD_VIDEOSTART       4294967104UL
 #define CMD_VIDEOSTARTF      4294967135UL
 
-//EVE4---------------
+/* EVE4 */
 #define CMD_ANIMFRAMERAM   0xFFFFFF6D
 #define CMD_ANIMSTARTRAM   0xFFFFFF6E
 #define CMD_APILEVEL       0xFFFFFF63
@@ -176,8 +176,7 @@
 #define CMD_TESTCARD       0xFFFFFF61
 #define CMD_WAIT           0xFFFFFF65
 
-
-//EVE4-------------
+/* EVE4 */
 #define COMPRESSED_RGBA_ASTC_10x10_KHR 37819UL
 #define COMPRESSED_RGBA_ASTC_10x5_KHR 37816UL
 #define COMPRESSED_RGBA_ASTC_10x6_KHR 37817UL
@@ -389,8 +388,8 @@
 #define REG_ESPIM_ADD        3155356UL
 #define REG_ESPIM_COUNT      3155360UL
 #define REG_ESPIM_DUMMY      3155428UL
-#define REG_PCLK_FREQ		 0x302614
-#define REG_PCLK_2X			 0x302618
+#define REG_PCLK_FREQ        0x302614
+#define REG_PCLK_2X          0x302618
 #define REG_ESPIM_READSTART  3155336UL
 #define REG_ESPIM_SEQ        3155340UL
 #define REG_ESPIM_TRIG       3155432UL
@@ -499,12 +498,11 @@
 #define REG_VSIZE            3153992UL
 #define REG_VSYNC0           3153996UL
 #define REG_VSYNC1           3154000UL
-//EVE4-------------
+/* EVE4 */
 #define REG_UNDERRUN     0x0030260c
 #define REG_AH_CYCLE_MAX 0x00302610
 
-//EVE4-------------
-
+/* EVE4 */
 #define REPEAT               1UL
 #define REPLACE              2UL
 #define RGB332               4UL

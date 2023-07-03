@@ -854,17 +854,12 @@ void App_Common_Init(Gpu_Hal_Context_t *phost) {
 	Gpu_Hal_Wr16(phost, REG_DITHER, DispDither);
 
 	/* GPIO configuration */
-#if defined(FT81X_ENABLE)
-	Gpu_Hal_Wr16(phost, REG_GPIOX_DIR, 0x8000);
-	Gpu_Hal_Wr8(phost, REG_GPIO_DIR, 0x8000);
-	Gpu_Hal_Wr16(phost, REG_GPIOX, 0x8000);
-	// Gpu_Hal_Wr16(phost, REG_GPIOX_DIR, 0xFFFF);
-	//  Gpu_Hal_Wr8(phost, REG_GPIO_DIR,0xFFFF);
-	//Gpu_Hal_Wr16(phost, REG_GPIOX, 0xFFFF);
+#if (defined(FT81X_ENABLE))  || (defined(BT81X_ENABLE))
+	Gpu_Hal_Wr16(phost, REG_GPIOX_DIR, 0xFFFF);
+	Gpu_Hal_Wr16(phost, REG_GPIOX, 0xFFFF);
 #else
-	Gpu_Hal_Wr16(phost, REG_GPIOX_DIR, 0x8000);
-	Gpu_Hal_Wr16(phost, REG_GPIOX, 0x8000);
-
+	Gpu_Hal_Wr8(phost, REG_GPIO_DIR, 0xFF);
+	Gpu_Hal_Wr8(phost, REG_GPIO, 0xFF);
 #endif
 
 	Gpu_ClearScreen(phost);
