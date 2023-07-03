@@ -30,14 +30,32 @@
 
 #if defined (EVE_1)
 #if defined (NTP_50) || defined (RTP_50) || defined (CTP_50) || \
-    defined (NTP_70) || defined (RTP_70) || defined (CTP_70)
+    defined (NTP_70) || defined (RTP_70) || defined (CTP_70) || \
+    defined (IPS_35) || defined (IPS_43) || defined (IPS_50) || \
+    defined (IPS_70) || defined (IPS_101)
   #error "Not supported configuration - please contact Riverdi support <support@riverdi.com"
 #endif
 
 #endif
 #if defined (EVE_2)
 #if defined (NTP_35) || defined (RTP_35) || defined (CTP_35) || \
-    defined (NTP_43) || defined (RTP_43) || defined (CTP_43)
+    defined (NTP_43) || defined (RTP_43) || defined (CTP_43) || \
+    defined (IPS_35) || defined (IPS_43) || defined (IPS_50) || \
+    defined (IPS_70) || defined (IPS_101)
+  #error "Not supported configuration - please contact Riverdi support <support@riverdi.com"
+#endif
+#endif
+#if defined (EVE_3)
+#if defined (IPS_35) || defined (IPS_43) || defined (IPS_50) || \
+    defined (IPS_70) || defined (IPS_101)
+  #error "Not supported configuration - please contact Riverdi support <support@riverdi.com"
+#endif
+#endif
+#if defined (EVE_4)
+#if defined (NTP_35) || defined (RTP_35) || defined (CTP_35) || \
+    defined (NTP_43) || defined (RTP_43) || defined (CTP_43) || \
+    defined (NTP_50) || defined (RTP_50) || defined (CTP_50) || \
+    defined (NTP_70) || defined (RTP_70) || defined (CTP_70)
   #error "Not supported configuration - please contact Riverdi support <support@riverdi.com"
 #endif
 #endif
