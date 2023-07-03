@@ -12,8 +12,8 @@ OVERVIEW
 The library contains support for the most popular hardware/software platforms like:
 
 * __Raspberry Pi__ (and other linux-based Single Board Computers),
-* __STM32__ (with full support for [*Riverdi Revelation Board*](https://riverdi.com/product/riverdi-revelation-board/)),
-* __Windows__ (with FT232H USB-SPI converters - for example [*Riverdi Hermes Board*](https://riverdi.com/product/hermes-board/)),
+* __STM32__ (with full support for [*Riverdi STM32 Evaluation Board*](https://riverdi.com/product/stm32-evaluation-board/) (__work-in-progress__)),
+* __Windows__ (with FT232H USB-SPI converters - FT232H USB-SPI converter is a part of [*Riverdi STM32 Evaluation Board*](https://riverdi.com/product/stm32-evaluation-board/)),
 * __Arduino__ (source code available as a separate GitHub repository - [*riverdi-eve-arduino*](https://github.com/riverdi/riverdi-eve-arduino)).
 
 Library supports instructions in a similar format to the *FT80x and FT81x Series Programmers Guides* and the *EVE Screen Editor*. 
