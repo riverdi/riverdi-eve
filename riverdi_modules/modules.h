@@ -197,22 +197,6 @@
   #define DispDither     0
   #define DispPLCLKFREQ  0x8c1
   #define DispPCLK2x	 1
-#elif defined (CTP_80)
-  #define DispWidth      800L
-  #define DispHeight     600L
-  #define DispHCycle     1056L
-  #define DispHOffset    46L
-  #define DispHSync0     0L
-  #define DispHSync1     8L
-  #define DispVCycle     635L
-  #define DispVOffset    23L
-  #define DispVSync0     0L
-  #define DispVSync1     10L
-  #define DispPCLK       2
-  #define DispSwizzle    3
-  #define DispPCLKPol    1
-  #define DispCSpread    0
-  #define DispDither     0
 #endif
 
 #endif /*_MODULES_H_*/
