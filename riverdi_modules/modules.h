@@ -16,7 +16,6 @@
   #define FT81X_ENABLE
 #elif defined (EVE_3)
   #define BT81X_ENABLE
-  #define FT81X_ENABLE
 #elif defined (EVE_4)
   #define BT81X_ENABLE
 
