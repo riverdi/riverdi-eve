@@ -115,7 +115,7 @@ Project -> Build All [Ctrl+B]
 GETTING HELP
 ------------
 
-Please contact Riverdi support - [*<support@riverdi.com>*](support@riverdi.com)
+Please contact Riverdi support - [*<contact@riverdi.com>*](contact@riverdi.com)
 
 LICENSE
 -------
