@@ -46,7 +46,7 @@ smoothlerp (float t, float a, float b)
 static void
 SAMAPP_GPU_Ball_Stencil()
 {
-  int16_t xball = (DispWidth/2),yball = 120,rball = (DispWidth/8);
+  int16_t xball = (DispWidth/2),yball = (DispHeight/2),rball = (DispWidth/8);
   int16_t numpoints = 6,numlines = 8,i,asize,aradius,gridsize = 20;
   int32_t asmooth,dispr = (DispWidth - 10),displ = 10,dispa = 10,dispb = (DispHeight - 10),xflag = 1,yflag = 1;
 
