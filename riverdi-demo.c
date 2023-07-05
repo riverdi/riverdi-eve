@@ -1,7 +1,7 @@
 #include "platform.h"
 #include "App_Common.h"
 
-/* Global used for buffer optimization */
+/* global used for buffer optimization */
 Gpu_Hal_Context_t host, *phost;
 
 static void SAMAPP_GPU_Ball_Stencil();
@@ -30,25 +30,28 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-static float
-lerp (float t, float a, float b)
-{
-  return (float)((1 - t) * a + t * b);
-}
-
-static float
-smoothlerp (float t, float a, float b)
-{
-  float lt = 3 * t * t - 2 * t * t * t;
-  return lerp(lt, a, b);
-}
-
 static void
 SAMAPP_GPU_Ball_Stencil()
 {
-  int16_t xball = (DispWidth/2),yball = (DispHeight/2),rball = (DispWidth/8);
-  int16_t pixel_precision, numpoints = 6,numlines = 8,i,asize,aradius,gridsize = 20;
-  int32_t asmooth,dispr = (DispWidth - 10),displ = 10,dispa = 10,dispb = (DispHeight - 10),xflag = 1,yflag = 1;
+  uint8_t xflag, yflag;
+  int16_t xball, yball, rball, pixel_precision, gridsize;
+  int32_t displ, dispr, dispa, dispb;
+
+  /* grid margins */
+  displ = 10;
+  dispr = (DispWidth - 10);
+  dispa = 50;
+  dispb = (DispHeight - 10);
+
+  /* grid size */
+  gridsize = 20;
+
+  /* ball dimensions */
+  xball = (DispWidth/2);
+  yball = (DispHeight/2);
+  rball = (DispWidth/8);
+  xflag = 1;
+  yflag = 1;
 
   dispr -= ((dispr - displ)%gridsize);
   dispb -= ((dispb - dispa)%gridsize);
@@ -56,17 +59,12 @@ SAMAPP_GPU_Ball_Stencil()
   /* endless loop */
   while(1)
     {
+      /* ball movement */
       if(((xball + rball + 2) >= dispr) || ((xball - rball - 2) <= displ))
-        {
-          xflag ^= 1;
-          Gpu_Hal_Wr8(phost, REG_PLAY,1);
-        }
+        xflag ^= 1;
 
       if(((yball + rball + 8) >= dispb) || ((yball - rball - 8) <= dispa))
-        {
-          yflag ^= 1;
-          Gpu_Hal_Wr8(phost, REG_PLAY,1);
-        }
+        yflag ^= 1;
 
       if(xflag)
         xball += 2;
@@ -74,14 +72,9 @@ SAMAPP_GPU_Ball_Stencil()
         xball -= 2;
 
       if(yflag)
-        yball += 8 ;
+        yball += 8;
       else
         yball -= 8;
-
-      App_WrDl_Buffer(phost, CLEAR_COLOR_RGB(128, 128, 0) );
-      App_WrDl_Buffer(phost, CLEAR(1, 1, 1));
-      App_WrDl_Buffer(phost, STENCIL_OP(INCR,INCR) );
-      App_WrDl_Buffer(phost, COLOR_RGB(0, 0, 0) );
 
       /* set the precision of VERTEX2F coordinates */
 #if defined (IPS_70) || (IPS_101)
@@ -93,95 +86,95 @@ SAMAPP_GPU_Ball_Stencil()
       pixel_precision = 16;
 #endif
 
+      /* init and set background */
+      App_WrDl_Buffer(phost, CLEAR_COLOR_RGB(255, 255, 255));
+      App_WrDl_Buffer(phost, CLEAR(1, 1, 1));
+      App_WrDl_Buffer(phost, STENCIL_OP(INCR,INCR));
+      App_WrDl_Buffer(phost, COLOR_RGB(0, 0, 0));
+
       /* draw grid */
       App_WrDl_Buffer(phost, LINE_WIDTH(pixel_precision));
       App_WrDl_Buffer(phost, BEGIN(LINES));
 
-      for(i=0;i<=((dispr - displ)/gridsize);i++)
+      for(uint16_t i=0; i<=((dispr - displ)/gridsize); i++)
         {
           App_WrDl_Buffer(phost, VERTEX2F((displ + i*gridsize)*pixel_precision,dispa*pixel_precision));
           App_WrDl_Buffer(phost, VERTEX2F((displ + i*gridsize)*pixel_precision,dispb*pixel_precision));
         }
 
-      for(i=0;i<=((dispb - dispa)/gridsize);i++)
+      for(uint16_t i=0; i<=((dispb - dispa)/gridsize); i++)
         {
           App_WrDl_Buffer(phost, VERTEX2F(displ*pixel_precision,(dispa + i*gridsize)*pixel_precision));
           App_WrDl_Buffer(phost, VERTEX2F(dispr*pixel_precision,(dispa + i*gridsize)*pixel_precision));
         }
-
       App_WrDl_Buffer(phost, END());
-      App_WrDl_Buffer(phost, COLOR_MASK(0,0,0,0) );
+
+      /* add simple text using built-in fonts */
+      {
+        Gpu_Fonts_t   font;
+        uint8_t       font_size;
+        uint32_t      font_table;
+        uint32_t      text_hoffset, text_voffset;
+
+#if defined (NTP_35) || (RTP_35) || (CTP_35) || (IPS_35) || (NTP_43) || (RTP_43) || (CTP_43) || (IPS_43)
+        const uint8_t text[] = "Riverdi EVE Demo";
+#elif defined (NTP_50) || (RTP_50) || (CTP_50) || (IPS_50) || (NTP_70) || (RTP_70) || (CTP_70) || (IPS_70)
+        const uint8_t text[] = "Riverdi EVE Demo - https://www.riverdi.com";
+#elif defined (IPS_101)
+        const uint8_t text[] = "Riverdi EVE Demo - https://www.riverdi.com - contact@riverdi.com";
+#endif
+
+        text_hoffset = displ; /* set the same offset like for grid */
+        text_voffset = 5;
+
+        font_size = 30;
+        font_table = Gpu_Hal_Rd32(phost, ROMFONT_TABLEADDRESS);
+
+        Gpu_Hal_RdMem(phost, (font_table + (font_size-16) * GPU_FONT_TABLE_SIZE),
+                      (uint8_t*)&font, GPU_FONT_TABLE_SIZE);
+
+        App_WrDl_Buffer(phost, COLOR_RGB(0, 96, 169));
+        App_WrDl_Buffer(phost, BEGIN(BITMAPS));
+        App_WrDl_Buffer(phost, BITMAP_HANDLE((font_size%32)));
+
+        for (uint8_t cnt = 0; cnt < sizeof(text)-1; cnt++)
+          {
+            App_WrDl_Buffer(phost, CELL(text[cnt]));
+            App_WrDl_Buffer(phost, VERTEX2F(text_hoffset*pixel_precision, text_voffset*pixel_precision));
+            text_hoffset += font.FontWidth[text[cnt]];
+          }
+        App_WrDl_Buffer(phost, END());
+      }
+
+      /* draw ball and shadow */
+      App_WrDl_Buffer(phost, COLOR_MASK(1,1,1,1));
+      App_WrDl_Buffer(phost, STENCIL_FUNC(ALWAYS,1,255));
+      App_WrDl_Buffer(phost, STENCIL_OP(KEEP,KEEP));
+      App_WrDl_Buffer(phost, COLOR_RGB(255, 255, 255));
       App_WrDl_Buffer(phost, POINT_SIZE(rball*16));
       App_WrDl_Buffer(phost, BEGIN(FTPOINTS));
+      App_WrDl_Buffer(phost, VERTEX2F((xball - 1)*pixel_precision,(yball - 1)*pixel_precision));
+      App_WrDl_Buffer(phost, COLOR_RGB(0, 0, 0));
+      App_WrDl_Buffer(phost, COLOR_A(160));
+      App_WrDl_Buffer(phost, VERTEX2F((xball+pixel_precision)*pixel_precision,(yball+8)*pixel_precision));
+      App_WrDl_Buffer(phost, COLOR_A(255));
+      App_WrDl_Buffer(phost, COLOR_RGB(254, 172, 0));
       App_WrDl_Buffer(phost, VERTEX2F(xball*pixel_precision,yball*pixel_precision));
-      App_WrDl_Buffer(phost, STENCIL_OP(INCR,ZERO) );
-      App_WrDl_Buffer(phost, STENCIL_FUNC(GEQUAL,1,255));
+      App_WrDl_Buffer(phost, COLOR_RGB(255, 255, 255));
+      App_WrDl_Buffer(phost, STENCIL_FUNC(GEQUAL,1,1));
+      App_WrDl_Buffer(phost, STENCIL_OP(KEEP,KEEP));
+      App_WrDl_Buffer(phost, VERTEX2F(xball*pixel_precision,yball*pixel_precision));
+      App_WrDl_Buffer(phost, END());
 
-      for(i=1;i<=numpoints;i++)
-        {
-          asize = i*rball*2/(numpoints + 1);
-          asmooth = (int16_t)smoothlerp((float)((float)(asize)/(2*(float)rball)),0,2*(float)rball);
+      /* display */
+      App_WrDl_Buffer(phost, DISPLAY());
 
-          if(asmooth > rball)
-            {
-              int32_t tempsmooth;
+      /* download display list into DL RAM */
+      App_Flush_DL_Buffer(phost);
 
-              tempsmooth = asmooth - rball;
-              aradius = (rball*rball + tempsmooth*tempsmooth)/(2*tempsmooth);
-              App_WrDl_Buffer(phost, POINT_SIZE(aradius*16));
-              App_WrDl_Buffer(phost, VERTEX2F((xball - aradius + tempsmooth)*pixel_precision,yball*pixel_precision));
-            }
-          else
-            {
-              int32_t tempsmooth;
+      /* do a swap */
+      Gpu_Hal_DLSwap(phost, DLSWAP_FRAME);
 
-              tempsmooth = rball - asmooth;
-              aradius = (rball*rball + tempsmooth*tempsmooth)/(2*tempsmooth);
-              App_WrDl_Buffer(phost, POINT_SIZE(aradius*16));
-              App_WrDl_Buffer(phost, VERTEX2F((xball+ aradius - tempsmooth)*pixel_precision,yball*pixel_precision));
-            }
-          }
-
-        App_WrDl_Buffer(phost, END());
-        App_WrDl_Buffer(phost, BEGIN(LINES));
-
-        /* draw lines - line should be at least radius diameter */
-        for(i=1;i<=numlines;i++)
-          {
-            asize = (i*rball*2/numlines);
-            asmooth = (int16_t)smoothlerp((float)((float)(asize)/(2*(float)rball)),0,2*(float)rball);
-            App_WrDl_Buffer(phost, LINE_WIDTH(asmooth * 16));
-            App_WrDl_Buffer(phost, VERTEX2F((xball - rball)*pixel_precision,(yball - rball)*pixel_precision));
-            App_WrDl_Buffer(phost, VERTEX2F((xball + rball)*pixel_precision,(yball - rball)*pixel_precision));
-          }
-        App_WrDl_Buffer(phost, END());
-
-        App_WrDl_Buffer(phost, COLOR_MASK(1,1,1,1) );//enable all the colors
-        App_WrDl_Buffer(phost, STENCIL_FUNC(ALWAYS,1,255));
-        App_WrDl_Buffer(phost, STENCIL_OP(KEEP,KEEP));
-        App_WrDl_Buffer(phost, COLOR_RGB(255, 255, 255));
-        App_WrDl_Buffer(phost, POINT_SIZE(rball*16));
-        App_WrDl_Buffer(phost, BEGIN(FTPOINTS));
-        App_WrDl_Buffer(phost, VERTEX2F((xball - 1)*pixel_precision,(yball - 1)*pixel_precision));
-        App_WrDl_Buffer(phost, COLOR_RGB(0, 0, 0));//shadow
-        App_WrDl_Buffer(phost, COLOR_A(160));
-        App_WrDl_Buffer(phost, VERTEX2F((xball+pixel_precision)*pixel_precision,(yball+8)*pixel_precision));
-        App_WrDl_Buffer(phost, COLOR_A(255));
-        App_WrDl_Buffer(phost, COLOR_RGB(255, 255, 255) );
-        App_WrDl_Buffer(phost, VERTEX2F(xball*pixel_precision,yball*pixel_precision));
-        App_WrDl_Buffer(phost, COLOR_RGB(255, 0, 0) );
-        App_WrDl_Buffer(phost, STENCIL_FUNC(GEQUAL,1,1));
-        App_WrDl_Buffer(phost, STENCIL_OP(KEEP,KEEP));
-        App_WrDl_Buffer(phost, VERTEX2F(xball*pixel_precision,yball*pixel_precision));
-
-        App_WrDl_Buffer(phost, END());
-        App_WrDl_Buffer(phost,DISPLAY());
-
-        /* Download the DL into DL RAM */
-        App_Flush_DL_Buffer(phost);
-
-        /* Do a swap */
-        Gpu_Hal_DLSwap(phost,DLSWAP_FRAME);
-      } /* while */
+    } /* while */
 }
 
