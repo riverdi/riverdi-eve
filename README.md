@@ -16,7 +16,9 @@ The library contains support for the most popular hardware/software platforms li
 * __Windows__ (with FT232H USB-SPI converters - FT232H USB-SPI converter is a part of [*Riverdi STM32 Evaluation Board*](https://riverdi.com/product/stm32-evaluation-board/)),
 * __Arduino__ (source code available as a separate GitHub repository - [*riverdi-eve-arduino*](https://github.com/riverdi/riverdi-eve-arduino)).
 
-Library supports instructions in a similar format to the *FT80x and FT81x Series Programmers Guides* and the *EVE Screen Editor*. 
+Library supports instructions in a similar format to the *FT80x and FT81x Series Programmers Guides* and the *EVE Screen Editor*.
+
+__Note:__ *this repository contains library code fully integrated with example app (and Makefile files for various platform) - if you need only library, please check [*riverdi-eve-lib*](https://github.com/riverdi/riverdi-eve-lib) repository and examples of library integration for such platforms like: [*RP2040*](https://github.com/riverdi/riverdi-eve-demo-rp2040), [*ESP32*](https://github.com/riverdi/riverdi-eve-demo-esp32) or [*Raspberry Pi*](https://github.com/riverdi/riverdi-eve-demo-rpi)*
 
 LIBRARY ARCHITECTURE
 --------------------
@@ -31,7 +33,7 @@ This layer is designed to allow the main application to use syntax close to that
 
 #### EVE Layer
 
-This layer translates the calls from the API layer above into a series of SPI byte transfers formatted for the protocol used by the FT8XX. It includes a series of functions which send the register address as well as for reading and writing 8/16/32-bit values. It also has functions for checking the read and write pointers of the RAM_CMD FIFO and for checking the free space available, which are used by the layers above. 
+This layer translates the calls from the API layer above into a series of SPI byte transfers formatted for the protocol used by the FT8XX. It includes a series of functions which send the register address as well as for reading and writing 8/16/32-bit values. It also has functions for checking the read and write pointers of the RAM_CMD FIFO and for checking the free space available, which are used by the layers above.
 
 #### Host Layer
 
@@ -44,7 +46,7 @@ COMPILING LIBRARY
 
 The *riverdi-eve* project uses a standard Makefile and GNU make to build and customize the source files for all supported platforms.
 
-__Note:__ *before compilation edit Makefile.linux file to choose Embedded Video Engine series (-DEVE_1, -DEVE_2 or -DEVE_3 flags), choose type and size of connected TFT module (choose predefined macros for Riverdi EVE modules or edit timings manually in modules.h file for custom displays) or to adjust compilation settings.*  
+__Note:__ *before compilation edit Makefile.linux file to choose Embedded Video Engine series (-DEVE_1, -DEVE_2 or -DEVE_3 flags), choose type and size of connected TFT module (choose predefined macros for Riverdi EVE modules or edit timings manually in modules.h file for custom displays) or to adjust compilation settings.*
 
 #### Raspberry Pi / Linux SBCs
 
@@ -76,7 +78,7 @@ sudo apt-get install gcc-arm-none-eabi binutils-arm-none-eabi
 ```
 2. You also might want to install some other debuggers or dedicated software for your programmer (for example *stlink*):
 ```
-sudo apt-get install openocd gdb-arm-none-eabi 
+sudo apt-get install openocd gdb-arm-none-eabi
 ```
 3. Clone the repository:
 ```
@@ -121,3 +123,4 @@ LICENSE
 -------
 
 See LICENSE.txt file for details.
+
