@@ -2,7 +2,7 @@ OVERVIEW
 --------
 ![alt text](http://circuitcellar.com/wp-content/uploads/2016/10/FTDI-Img.png "riverdi-logo")
 
-*riverdi-eve* project is an easy-to-use C library and example app (good starting point for your own projects) for the Bridgetek’s [*FT8XX EVE (Embedded Video Engine)*](http://brtchip.com/eve/) solutions:
+*riverdi-eve* is an easy-to-use library and example app (good starting poiny for you own projects) for [*Riverdi Intelligent Display*](https://riverdi.com/product-category/intelligent-displays/bt817q/) driven by [*Bridgetek EVE graphics controllers*](http://brtchip.com/eve/):
 
 - __EVE 1__ series: FT800 and FT801,
 - __EVE 2__ series: FT810, FT811, FT812 and FT813,
@@ -16,7 +16,7 @@ The library contains support for the most popular hardware/software platforms li
 * __Windows__ (with FT232H USB-SPI converters - FT232H USB-SPI converter is a part of [*Riverdi STM32 Evaluation Board*](https://riverdi.com/product/stm32-evaluation-board/)),
 * __Arduino__ (source code available as a separate GitHub repository - [*riverdi-eve-arduino*](https://github.com/riverdi/riverdi-eve-arduino)).
 
-Library supports instructions in a similar format to the *FT80x and FT81x Series Programmers Guides* and the *EVE Screen Editor*.
+Library supports instructions in a similar format to the [*FT80x and FT81x Series Programmers Guides*](https://brtchip.com/wp-content/uploads/Support/Documentation/Programming_Guides/ICs/EVE/FT81X_Series_Programmer_Guide.pdf), [*BT81X Series Programming Guide*](https://brtchip.com/wp-content/uploads/2022/12/BRT_AN_033_BT81X-Series-Programming-Guide.pdf) and the [*EVE Screen Editor*](https://brtchip.com/ese-2/).
 
 __Note:__ *this repository contains library code fully integrated with example app (and Makefile files for various platform) - if you need only library, please check [*riverdi-eve-lib*](https://github.com/riverdi/riverdi-eve-lib) repository and examples of library integration for such platforms like: [*RP2040*](https://github.com/riverdi/riverdi-eve-demo-rp2040), [*ESP32*](https://github.com/riverdi/riverdi-eve-demo-esp32) or [*Raspberry Pi*](https://github.com/riverdi/riverdi-eve-demo-rpi)*
 
@@ -122,5 +122,5 @@ Please contact Riverdi support - [*<contact@riverdi.com>*](contact@riverdi.com)
 LICENSE
 -------
 
-See LICENSE.txt file for details.
+See *LICENSE.txt* file for details.
 
