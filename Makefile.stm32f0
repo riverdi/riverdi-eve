@@ -64,17 +64,17 @@ STLINK = /home/lskalski/Programs/stlink/build/Release
 # List of source files
 SRC  = ./$(PROJECT).c
 
-SRC += ./host_layer/stm32/src/syscalls.c
-SRC += ./host_layer/stm32/src/stm32f0xx_it.c
-SRC += ./host_layer/stm32/src/system_stm32f0xx.c
+SRC += ./host_layer/stm32f0/src/syscalls.c
+SRC += ./host_layer/stm32f0/src/stm32f0xx_it.c
+SRC += ./host_layer/stm32f0/src/system_stm32f0xx.c
 
-SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal.c
-SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal_cortex.c
-SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal_rcc.c
-SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal_gpio.c
-SRC += ./host_layer/stm32/hal/src/stm32f0xx_hal_spi.c
+SRC += ./host_layer/stm32f0/hal/src/stm32f0xx_hal.c
+SRC += ./host_layer/stm32f0/hal/src/stm32f0xx_hal_cortex.c
+SRC += ./host_layer/stm32f0/hal/src/stm32f0xx_hal_rcc.c
+SRC += ./host_layer/stm32f0/hal/src/stm32f0xx_hal_gpio.c
+SRC += ./host_layer/stm32f0/hal/src/stm32f0xx_hal_spi.c
 
-SRC += ./host_layer/stm32/platform.c
+SRC += ./host_layer/stm32f0/platform.c
 
 SRC += ./eve_layer/Gpu_Hal.c
 SRC += ./eve_layer/CoPro_Cmds.c
@@ -82,16 +82,16 @@ SRC += ./eve_layer/Hal_Utils.c
 SRC += ./app_layer/App_Common.c
 
 # List assembly startup source file here
-STARTUP = ./host_layer/stm32/startup/startup_stm32.s
+STARTUP = ./host_layer/stm32f0/startup/startup_stm32.s
 
 # List all include directories here
 INCDIRS  = ./
-INCDIRS += ./host_layer/stm32
-INCDIRS += ./host_layer/stm32/inc
-INCDIRS += ./host_layer/stm32/cmsis/core
-INCDIRS += ./host_layer/stm32/cmsis/device
-INCDIRS += ./host_layer/stm32/hal/inc
-INCDIRS += ./host_layer/stm32/hal/legacy
+INCDIRS += ./host_layer/stm32f0
+INCDIRS += ./host_layer/stm32f0/inc
+INCDIRS += ./host_layer/stm32f0/cmsis/core
+INCDIRS += ./host_layer/stm32f0/cmsis/device
+INCDIRS += ./host_layer/stm32f0/hal/inc
+INCDIRS += ./host_layer/stm32f0/hal/legacy
 
 INCDIRS += ./eve_layer
 INCDIRS += ./app_layer
@@ -104,7 +104,7 @@ LIBDIRS +=
 LIBS =
 
 # Define linker script file here
-LINKER_SCRIPT = ./host_layer/stm32/linker/LinkerScript.ld
+LINKER_SCRIPT = ./host_layer/stm32f0/linker/LinkerScript.ld
 
 # Dirs
 OBJS  = $(STARTUP:.s=.o) $(SRC:.c=.o)
