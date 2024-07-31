@@ -1,0 +1,161 @@
+#
+# Copyright (c) Riverdi Sp. z o.o. sp. k. <riverdi@riverdi.com>
+# Copyright (c) Skalski Embedded Technologies <contact@lukasz-skalski.com>
+#
+
+# Project name
+PROJECT = riverdi-demo
+
+# List all C defines here
+DEFS  = -DSTM32
+DEFS += -DSTM32F469xx
+DEFS += -DUSE_HAL_DRIVER
+
+DEFS += -DSTM32_PLATFORM
+DEFS += -DSTM32_PLATFORM_COCMD_BURST
+
+#DEFS += -DEVE_1
+#DEFS += -DEVE_2
+#DEFS += -DEVE_3
+DEFS += -DEVE_4
+
+#DEFS += -DEVE_4_INTERNAL_OSC
+DEFS += -DEVE_4_EXTERNAL_OSC
+
+#DEFS += -DNTP_35
+#DEFS += -DRTP_35
+#DEFS += -DCTP_35
+#DEFS += -DNTP_43
+#DEFS += -DRTP_43
+#DEFS += -DCTP_43
+#DEFS += -DNTP_50
+#DEFS += -DRTP_50
+#DEFS += -DCTP_50
+#DEFS += -DNTP_70
+#DEFS += -DRTP_70
+#DEFS += -DCTP_70
+#DEFS += -DIPS_35
+DEFS += -DIPS_43
+#DEFS += -DIPS_50
+#DEFS += -DIPS_70
+#DEFS += -DIPS_101
+
+# Define optimisation level here
+OPT = -Os
+
+# MCU type
+MCU  = cortex-m4
+
+# Tools
+PREFIX = arm-none-eabi-
+CC   = $(PREFIX)gcc
+CXX  = $(PREFIX)g++
+GDB  = $(PREFIX)gdb
+CP   = $(PREFIX)objcopy
+AS   = $(PREFIX)gcc -x assembler-with-cpp
+HEX  = $(CP) -O ihex
+BIN  = $(CP) -O binary -S
+
+#Path to Texane's stlink tools (hardcoded!)
+STLINK = /home/lskalski/Programs/stlink/build/Release
+
+# List of source files
+SRC  = ./$(PROJECT).c
+
+SRC += ./host_layer/stm32f4/src/syscalls.c
+SRC += ./host_layer/stm32f4/src/stm32f4xx_it.c
+SRC += ./host_layer/stm32f4/src/system_stm32f4xx.c
+
+SRC += ./host_layer/stm32f4/hal/src/stm32f4xx_hal_spi.c
+SRC += ./host_layer/stm32f4/hal/src/stm32f4xx_hal_rcc.c
+SRC += ./host_layer/stm32f4/hal/src/stm32f4xx_hal_gpio.c
+SRC += ./host_layer/stm32f4/hal/src/stm32f4xx_hal_pwr.c
+SRC += ./host_layer/stm32f4/hal/src/stm32f4xx_hal_pwr_ex.c
+SRC += ./host_layer/stm32f4/hal/src/stm32f4xx_hal_cortex.c
+SRC += ./host_layer/stm32f4/hal/src/stm32f4xx_hal.c
+SRC += ./host_layer/stm32f4/hal/src/stm32f4xx_hal_exti.c
+
+SRC += ./host_layer/stm32f4/platform.c
+
+SRC += ./eve_layer/Gpu_Hal.c
+SRC += ./eve_layer/CoPro_Cmds.c
+SRC += ./eve_layer/Hal_Utils.c
+SRC += ./app_layer/App_Common.c
+
+# List assembly startup source file here
+STARTUP = ./host_layer/stm32f4/startup/startup_stm32f469xx.s
+
+# List all include directories here
+INCDIRS  = ./
+INCDIRS += ./host_layer/stm32f4
+INCDIRS += ./host_layer/stm32f4/inc
+INCDIRS += ./host_layer/stm32f4/cmsis/core/include
+INCDIRS += ./host_layer/stm32f4/cmsis/device/ST/STM32F4xx/include
+INCDIRS += ./host_layer/stm32f4/hal/inc
+INCDIRS += ./host_layer/stm32f4/hal/legacy
+
+INCDIRS += ./eve_layer
+INCDIRS += ./app_layer
+INCDIRS += ./riverdi_modules
+
+# List the user directory to look for the libraries here
+LIBDIRS +=
+
+# List all user libraries here
+LIBS =
+
+# Define linker script file here
+LINKER_SCRIPT = ./host_layer/stm32f4/linker/LinkerScript.ld
+
+# Dirs
+OBJS  = $(STARTUP:.s=.o) $(SRC:.c=.o)
+INCDIR  = $(patsubst %,-I%, $(INCDIRS))
+LIBDIR  = $(patsubst %,-L%, $(LIBDIRS))
+LIB     = $(patsubst %,-l%, $(LIBS))
+
+# Flags
+COMMONFLAGS = -mcpu=$(MCU) -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+ASFLAGS = $(COMMONFLAGS)
+CPFLAGS = $(COMMONFLAGS) $(OPT) $(DEFS) -flto -g -Wall -ffunction-sections -fdata-sections
+LDFLAGS = $(COMMONFLAGS) -T$(LINKER_SCRIPT) -g -Wl,-Map=$(PROJECT).map -Wl,--gc-sections $(LIBDIR) $(LIB)
+
+#
+# Makefile Rules
+#
+
+all: $(OBJS) $(PROJECT).elf  $(PROJECT).hex $(PROJECT).bin
+	$(PREFIX)size $(PROJECT).elf
+
+%.o: %.c
+	$(CC) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
+
+%.o: %.s
+	$(AS) -c $(ASFLAGS) $< -o $@
+
+%.elf: $(OBJS)
+	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+%.hex: %.elf
+	$(HEX) $< $@
+
+%.bin: %.elf
+	$(BIN) $< $@
+
+flash: $(PROJECT).bin
+	$(STLINK)/st-flash write $(PROJECT).bin 0x8000000
+
+erase:
+	$(STLINK)/st-flash erase
+
+debug: $(PROJECT).elf
+	$(GDB) --eval-command="target remote localhost:4242" $(PROJECT).elf -ex 'load'
+
+clean:
+	-rm -rf $(OBJS)
+	-rm -rf $(PROJECT).elf
+	-rm -rf $(PROJECT).map
+	-rm -rf $(PROJECT).hex
+	-rm -rf $(PROJECT).bin
+	-rm -rf $(SRC:.c=.lst)
+	-rm -rf $(ASRC:.s=.lst)
+	-rm -rf $(STARTUP:.s=.lst)
