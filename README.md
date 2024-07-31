@@ -12,7 +12,7 @@ OVERVIEW
 The library contains support for the most popular hardware/software platforms like:
 
 * __Raspberry Pi__ (and other linux-based Single Board Computers),
-* __STM32__ (with full support for [*Riverdi STM32 Evaluation Board*](https://riverdi.com/product/stm32-evaluation-board/) (__work-in-progress__)),
+* __STM32__ (with full support for [*Riverdi STM32 Evaluation Board*](https://riverdi.com/product/stm32-evaluation-board/) ('stm32f4') and *Riverdi Revelation Board*) ('stm32f0'),
 * __Windows__ (with FT232H USB-SPI converters - FT232H USB-SPI converter is a part of [*Riverdi STM32 Evaluation Board*](https://riverdi.com/product/stm32-evaluation-board/)),
 * __Arduino__ (source code available as a separate GitHub repository - [*riverdi-eve-arduino*](https://github.com/riverdi/riverdi-eve-arduino)).
 
@@ -90,11 +90,11 @@ cd riverdi-eve
 ```
 5. Build *riverdi-eve* project:
 ```
-make -f Makefile.stm32
+make -f Makefile.stm32f4
 ```
 6. Flash your device:
 ```
-make -f Makefile.stm32 flash
+make -f Makefile.stm32f4 flash
 ```
 
 #### STM32 (cross-compilation under Windows and SW4STM32 IDE)
@@ -107,7 +107,7 @@ git clone https://github.com/riverdi/riverdi-eve.git
 ```
 File -> New -> Other -> C/C++ -> Makefile Project with Existing Code
 ```
-3. Rename *Makefile.stm32* file to *Makefile* (alternatively, replace defult build command *make* with *make -f Makefile.stm32* in *Project Properties*)
+3. Rename *Makefile.stm32f4* file to *Makefile* (alternatively, replace defult build command *make* with *make -f Makefile.stm32f4* in *Project Properties*)
 
 4. Now you can build project by choosing:
 ```
