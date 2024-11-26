@@ -69,7 +69,7 @@ INCDIRS += ./riverdi_modules
 LIBDIRS +=
 
 # List all user libraries here
-LIBS =
+LIBS = bcm2835
 
 # Dirs
 OBJS    = $(SRC:.c=.o)
@@ -90,7 +90,7 @@ LDFLAGS = $(COMMONFLAGS) $(LIBDIR) $(LIB)
 all: $(PROJECT)
 
 $(PROJECT): $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CC) $(OBJS) $(LDFLAGS) -o $@
 
 %.o: %.c
 	$(CC) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
