@@ -8,8 +8,8 @@ PROJECT = riverdi-demo
 
 # List all C defines here
 
-DEFS = -DLINUX_PLATFORM
-DEFS += -DBUFFER_OPTIMIZATION
+DEFS = -DRPI_PLATFORM
+DEFS += -DRPI_PLATFORM_COCMD_BURST
 
 #DEFS += -DEVE_1
 #DEFS += -DEVE_2
@@ -51,7 +51,7 @@ AS   = $(PREFIX)gcc -x assembler-with-cpp
 # List of source files
 SRC  = ./$(PROJECT).c
 
-SRC += ./host_layer/linux/platform.c
+SRC += ./host_layer/raspberry_pi/platform.c
 
 SRC += ./eve_layer/Gpu_Hal.c
 SRC += ./eve_layer/CoPro_Cmds.c
@@ -60,7 +60,7 @@ SRC += ./app_layer/App_Common.c
 
 # List all include directories here
 INCDIRS  = ./
-INCDIRS += ./host_layer/linux
+INCDIRS += ./host_layer/raspberry_pi
 INCDIRS += ./eve_layer
 INCDIRS += ./app_layer
 INCDIRS += ./riverdi_modules
