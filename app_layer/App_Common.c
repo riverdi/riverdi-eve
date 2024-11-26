@@ -233,7 +233,12 @@ void App_Calibrate_Screen(Gpu_Hal_Context_t *phost) {
 //#define LOGO_SCALE_ANIMATION
 /* Use bridgetek animation as default */
 
-const uchar8_t logo_graphics[6224] = { 120, 218, 237, 93, 127, 112, 36, 71, 117,
+#ifdef RPI_PLATFORM
+uchar8_t logo_graphics[6224] = {
+#else
+const uchar8_t logo_graphics[6224] = {
+#endif
+		120, 218, 237, 93, 127, 112, 36, 71, 117,
 		158, 221, 213, 207, 149, 116, 44, 190, 56, 56, 72, 156, 20, 2, 4, 167,
 		184, 72, 49, 113, 165, 42, 196, 58, 249, 42, 135, 77, 37, 172, 20, 199,
 		103, 42, 14, 142, 54, 63, 140, 147, 2, 35, 37, 113, 217, 247, 7, 70,

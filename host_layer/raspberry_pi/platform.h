@@ -21,6 +21,7 @@
 /* type definitions for EVE HAL library */
 #define TRUE    (1)
 #define FALSE   (0)
+#undef  MIN
 
 typedef char          bool_t;
 typedef char          char8_t;
